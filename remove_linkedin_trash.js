@@ -3,6 +3,7 @@ let intervalDiv;
 var scrollDiv;
 // add however many you want c:
 var blacklistKeywords = ["Microsoft"];
+var lastDeletedJobScroll = -1;
 
 // The event driven function to remove on scroll
 // Reloaded with navigation of the site
@@ -26,7 +27,6 @@ function scrollDelete(a) {
       }
     }
   });
-
   // Log the filtered spans only once when scrolled, and onl
   cards.forEach((span) => {
     var deleteLmao = span;
@@ -38,6 +38,76 @@ function scrollDelete(a) {
       console.log(companyName[0].textContent.trim(), "Position Removed");
     }
   });
+}
+
+function scrollDeleteSJobs(a) {
+  // The job card are loaded into jobs-feed-discovery-module-X
+  // And it just does as many as possible, so infinite scroll is just changing the X
+  // Ignore 2-3 since those have no job cards
+  // Loading all of them with each scroll is pointless, store the last stored
+  // var cards = [];
+  // while (true) {
+  //   curr = "jobs-feed-discovery-module-" + String(lastDeletedJobScroll + 1);
+  // }
+
+  // t = document.getElementsByClassName(
+  //   "discovery-templates-jobs-feed-discovery-module",
+  // );
+  // getElementsByTagName("ul")[0];
+  // ("discovery-templates-jobs-feed-discovery-module");
+  // // The way it works first you get the cards module by the nth entry, ignore 2 & 3 & 5 deleteLmao
+  // // And from the module itself, you then get the entries:
+  // // Per scroll try once to delete the module, since it might not load before the scroll
+  // // tries to delete it, just dont update the latest deleted
+  i = lastDeletedJobScroll;
+  notDone = true;
+  while (notDone) {
+    i++;
+    console.log(i, "hih?");
+    if ([2, 3, 5].includes(i) == true) {
+      console.log("later ", i);
+      lastDeletedJobScroll = i;
+      notDone = false;
+      continue;
+    }
+    curr = "jobs-feed-discovery-module-" + String(i);
+    t = document.getElementById(curr);
+    if (!t) {
+      i--;
+      console.log(i, t);
+      console.log("new job card module not loaded yet");
+      notDone = false;
+      continue; // If you want to retry without waiting for another scroll
+    }
+    console.log(i, "last deleted");
+    u_list = t.children[0].getElementsByTagName("ul")[0];
+
+    if (u_list) {
+      tt = u_list.getElementsByClassName("artdeco-entity-lockup__subtitle");
+      if (tt) {
+        // console.log("delete goes here");
+        // console.log("iiii");
+        // console.log(i);
+        // console.log(tt);
+        for (let span of tt) {
+          var companyName = span.getElementsByClassName(
+            "jobs-home-vertical-list__entity-list",
+          );
+
+          console.log(companyName);
+          // deleteLmao.remove();
+          // console.log("Removed Ad!");
+          // }
+        }
+        // console.log(tt.results.size);
+        lastDeletedJobScroll++;
+      } else {
+        notDone = false;
+      }
+    }
+  }
+  // t = document.getElementById("jobs-feed-discovery-module-0");
+  // tt = t.getElementsByClassName("discovery-templates-entity-item");
 }
 function scrollDeleteSuggested() {
   var spans = document.getElementsByClassName(
@@ -79,7 +149,8 @@ function removeTrashPostings(div) {
         // Attach the event listener to the scrollable div
         console.log("adding event listener");
         clearInterval(intervalDiv);
-        child.addEventListener("scroll", function () {
+        scrollDiv = child;
+        scrollDiv.addEventListener("scroll", function () {
           scrollDelete(child.className);
         });
       }
@@ -92,7 +163,8 @@ function removeTrashPostings(div) {
     // }
   } else {
     clearInterval(intervalDiv);
-    document.addEventListener("scroll", scrollDelete);
+    console.log("here? ");
+    document.addEventListener("scroll", scrollDeleteSJobs);
   }
 }
 
