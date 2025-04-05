@@ -7,3 +7,5 @@ Just a script rn, maybe I'll make it into an extension. But not looking forward 
 Use the Scripty extension to inject the script on load. 
 
 Scroll to make them disappear :~) 
+
+FIXING IT RN ⚠️!
